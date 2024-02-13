@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import AddButton from '../components/AddButton';
 import DiamondDate from '../components/DiamondDate';
 
@@ -34,7 +34,12 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       {/* Logo Section */}
-      <Text style={styles.logo}>LOGO</Text>
+      <Image
+        style={styles.logo}
+        source={require('../assets/poker-logo.png')} // If the image is local
+        // Or for network images:
+        // source={{ uri: 'https://example.com/path-to-your-logo.png' }}
+      />
 
       {/* Circle Icons Section */}
       <View style={styles.iconRow}>
@@ -80,8 +85,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    fontSize: 24,
-    marginBottom: 20,
+    width: 250,
+    height: 200,
+    marginTop: -125,
+    resizeMode: 'contain',
   },
   iconRow: {
     flexDirection: 'row',
