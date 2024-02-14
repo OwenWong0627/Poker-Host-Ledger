@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import AddButton from '../components/AddButton';
 import DiamondDate from '../components/DiamondDate';
+import StatsCircle from '../components/StatsCircle';
 
 const HomeScreen = () => {
 
-  const [dates, setDates] = useState(['Jan 11', 'May 10', 'Apr 1', 'Feb 30']);
+  const [dates, setDates] = useState(['Jan 11', 'May 10', 'Apr 1', 'Feb 30', 'Dec 29']);
 
   const splitDatesIntoRows = (datesArray: string[]) => {
     const displayDates = datesArray.length > 5 ? datesArray.slice(0, 5) : datesArray;
@@ -32,49 +33,48 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Logo Section */}
-      <Image
-        style={styles.logo}
-        source={require('../assets/poker-logo.png')} // If the image is local
-        // Or for network images:
-        // source={{ uri: 'https://example.com/path-to-your-logo.png' }}
-      />
+    <ScrollView>
+      <View style={styles.container}>
+        {/* Logo Section */}
+        <Image
+          style={styles.logo}
+          source={require('../assets/poker-logo.png')}
+        />
 
-      {/* Circle Icons Section */}
-      <View style={styles.iconRow}>
-        <View style={styles.circleIcon} />
-        <Text style={styles.iconText}>Label</Text>
-        <View style={styles.circleIcon} />
-        <Text style={styles.iconText}>Label</Text>
-      </View>
-
-      {/* Diamond Icons Section */}
-      <View style={styles.diamondWrapper}>
-        <View style={styles.diamondRow}>
-          {renderRowOfDates(firstRow)}
+        {/* Stats Section */}
+        <View style={styles.statsRow}>
+          <StatsCircle amount="$1000" subtext="Lifetime +/-" />
+          <StatsCircle amount="20" subtext="Sessions Hosted" />
+          <StatsCircle amount="-$20" subtext="Money Lost" />
         </View>
-        <View style={[styles.diamondRow, dates.length === 4 && {marginTop: 25}]}>
-          {renderRowOfDates(secondRow)}
-        </View>
-      </View>
 
-      {/* Buttons Section */}
-      <AddButton
-        title="Add Session"
-        onPress={() => {}}
-        buttonBackgroundColor='black'
-        buttonTextColor='white'
-        activeOpacity={0.4}
-      />
-      <AddButton
-        title="Add Player"
-        onPress={() => {}}
-        buttonBackgroundColor='white'
-        buttonTextColor='black'
-        activeOpacity={0.8}
-      />
-    </View>
+        {/* Recent Sessions Section */}
+        <View style={styles.diamondWrapper}>
+          <View style={styles.diamondRow}>
+            {renderRowOfDates(firstRow)}
+          </View>
+          <View style={[styles.diamondRow, dates.length === 4 && {marginTop: 25}]}>
+            {renderRowOfDates(secondRow)}
+          </View>
+        </View>
+
+        {/* Add Buttons Section */}
+        <AddButton
+          title="Add Session"
+          onPress={() => {}}
+          buttonBackgroundColor='black'
+          buttonTextColor='white'
+          activeOpacity={0.4}
+        />
+        <AddButton
+          title="Add Player"
+          onPress={() => {}}
+          buttonBackgroundColor='white'
+          buttonTextColor='black'
+          activeOpacity={0.8}
+        />
+      </View>
+    </ScrollView>
   );
 };
 
@@ -87,24 +87,11 @@ const styles = StyleSheet.create({
   logo: {
     width: 250,
     height: 200,
-    marginTop: -125,
     resizeMode: 'contain',
   },
-  iconRow: {
+  statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginBottom: 20,
-  },
-  circleIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#ddd',
-  },
-  iconText: {
-    fontSize: 16,
   },
   diamondWrapper: {
     alignItems: 'center',
@@ -114,29 +101,6 @@ const styles = StyleSheet.create({
   },
   diamondRow: {
     flexDirection: 'row',
-  },
-  diamondIcon: {
-    width: 65,
-    height: 65,
-    backgroundColor: '#ddd',
-    marginHorizontal: 15,
-    borderRadius: 15,
-    transform: [{ rotate: '45deg' }],
-  },
-  diamondTextContainer: {
-    marginLeft: 2,
-    marginTop: 5,
-    transform: [{ rotate: '-45deg' }],
-  },
-  diamondMonth: {
-    fontSize: 25,
-    textAlign: 'center',
-  },
-  diamondDay: {
-    fontSize: 15,
-    fontWeight: '900',
-    textAlign: 'center',
-    marginTop: 5,
   },
 });
 
