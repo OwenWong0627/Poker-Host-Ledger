@@ -1,11 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { resetGrid, toggleKeyboard } from '../redux/actions';
 
 const PageHeader = ({ navigation }: { navigation: any }) => {
 
+  const dispatch = useDispatch();
+
+  const handleReturn = () => {
+    dispatch(resetGrid());
+    dispatch(toggleKeyboard(false, '?', 'suits'));
+    navigation.goBack();
+  }
+
   return (
     <View style={styles.header}>
-      <TouchableOpacity style={styles.headerButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.headerButton} onPress={handleReturn}>
         <Text style={styles.buttonText}>←</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.headerButton}>

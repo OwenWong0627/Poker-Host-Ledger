@@ -12,7 +12,6 @@ interface PlayerCardProps {
   favHandSuit2: string;
 }
 
-
 const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2 }) => {
   
   const addDollarSign = (amount: number) => {

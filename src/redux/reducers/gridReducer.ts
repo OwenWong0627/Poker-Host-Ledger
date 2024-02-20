@@ -1,5 +1,5 @@
 // gridReducer.ts
-import { SELECT_GRID_ITEM, UPDATE_PLAYER_RANK, UPDATE_PLAYER_SUIT } from '../actions/actionTypes';
+import { SELECT_GRID_ITEM, UPDATE_PLAYER_RANK, UPDATE_PLAYER_SUIT, RESET_GRID } from '../actions/actionTypes';
 
 interface FavHand {
   favHandRank: string;
@@ -42,7 +42,11 @@ type UpdatePlayerSuitAction = {
   };
 };
 
-type Action = SelectGridItemAction | UpdatePlayerRankAction | UpdatePlayerSuitAction;
+type ResetGridAction = {
+  type: typeof RESET_GRID;
+};
+
+type Action = SelectGridItemAction | UpdatePlayerRankAction | UpdatePlayerSuitAction | ResetGridAction;
 
 
 const initialState: GridState = [
@@ -109,6 +113,11 @@ const gridReducer = (state = initialState, action: Action): GridState => {
             )
           } : item
         );
+      case RESET_GRID:
+        return state.map((item) => ({
+          ...item,
+          hand: item.hand.map((card) => ({ ...card, selected: false })),
+        }));
     default:
       return state;
   }
