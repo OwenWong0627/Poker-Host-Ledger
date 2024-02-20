@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface StatsCircleProps {
   amount: string;
@@ -11,7 +11,7 @@ const StatsCircle: React.FC<StatsCircleProps> = ({ amount, subtext }) => {
   return (
     <View style={styles.statItem}>
       <View style={styles.circleIcon}>
-        <Text style={styles.iconText}>{amount}</Text>
+        <Text numberOfLines={1} adjustsFontSizeToFit style={styles.iconText}>{amount}</Text>
       </View>
       <Text style={styles.statText}>{subtext}</Text>
     </View>
@@ -33,12 +33,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center the child text horizontally
   },
   iconText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   statText: {
     width: '100%',
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });

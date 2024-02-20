@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface DiamondDateProps {
@@ -10,7 +10,7 @@ interface DiamondDateProps {
 const DiamondDate: React.FC<DiamondDateProps> = ({ onPress, month, day }) => {
 
   return (
-    <TouchableOpacity style={styles.diamondIcon} >
+    <TouchableOpacity style={styles.diamondIcon} onPress={onPress}>
       <View style={styles.diamondTextContainer}>
         <Text style={styles.diamondMonth}>{month}</Text>
         <Text style={styles.diamondDay}>{day}</Text>
@@ -21,20 +21,20 @@ const DiamondDate: React.FC<DiamondDateProps> = ({ onPress, month, day }) => {
 
 const styles = StyleSheet.create({
   diamondIcon: {
-    width: 65,
-    height: 65,
+    width: 70,
+    height: 70,
     backgroundColor: '#ddd',
     marginHorizontal: 15,
     borderRadius: 15,
     transform: [{ rotate: '45deg' }],
   },
   diamondTextContainer: {
-    marginLeft: 2,
-    marginTop: 5,
+    marginLeft: 0,
+    marginTop: 7,
     transform: [{ rotate: '-45deg' }],
   },
   diamondMonth: {
-    fontSize: 25,
+    fontSize: 20,
     textAlign: 'center',
   },
   diamondDay: {
