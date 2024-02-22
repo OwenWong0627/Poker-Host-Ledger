@@ -1,22 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
 import CardField from './CardField';
+import PlayerDetailsModal from './PlayerDetailsModal';
+import { deletePlayer, getPlayers } from '../db/players';
+import { useDatabase } from '../context/DatabaseContext';
+import { Player } from '../db/models';
 
 interface PlayerCardProps {
-  id: string;
+  id: number;
   name: string;
   profit: number;
   favHandRank1: string;
   favHandSuit1: string;
   favHandRank2: string;
   favHandSuit2: string;
+  playerNotes: string;
+  setPlayers: (players: Player[]) => void;
 }
 
-const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2 }) => {
+const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes, setPlayers }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const db = useDatabase();
+  const player = { id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes };
+
+  const handleDeletePlayer = async (playerId: number) => {
+    console.log("Delete player with ID:", playerId);
+    await deletePlayer(db, playerId);
+    setPlayers(await getPlayers(db));
+    setModalVisible(false); // Close the modal after deletion
+  };
   
   const addDollarSign = (amount: number) => {
     if (amount < 0) {
       return '-$' + Math.abs(amount).toFixed(2);
+    }
+    else if (amount === undefined || amount === null) {
+      return '$0.00';
     }
     else {
       return '+$' + amount.toFixed(2);
@@ -25,10 +44,16 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1,
 
   return (
     <View style={styles.gridItem}>
-      <TouchableOpacity style={styles.gridTextField} >
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.gridTextField} >
         <Text style={styles.gridItemName}>{name}</Text>
         <Text>{addDollarSign(profit)}</Text>
       </TouchableOpacity>
+      <PlayerDetailsModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        player={player}
+        onDelete={handleDeletePlayer}
+      />
       <View style={styles.favHandField}>
         <CardField
           id={id}

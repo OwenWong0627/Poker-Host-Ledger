@@ -6,7 +6,7 @@ import { AppState } from '../redux/store';
 import { suitImages } from '../utils/constants';
 
 interface CardFieldProps {
-  id: string;
+  id: number;
   favHandIndex: number;
   favHandRank: string;
   favHandSuit: string;
@@ -18,7 +18,7 @@ const CardField: React.FC<CardFieldProps> = ({ id, favHandIndex, favHandRank, fa
   const dispatch = useDispatch();
 
   const isSelectedIndex = useSelector((state: AppState) => 
-    state.grid.find((item) => item.key === id)?.hand.findIndex(hand => hand.favHandRank === favHandRank && hand.favHandSuit === favHandSuit && hand.selected)
+    state.grid.players.find((item) => item.id === id)?.hand.findIndex(hand => hand.selected)
   );
 
   // Function to handle the selection of a player card

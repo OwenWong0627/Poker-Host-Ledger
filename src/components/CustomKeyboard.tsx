@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { suitImages } from '../utils/constants';
 
 interface CustomKeyboardProps {
-  onSelectRank: (rank: string) => void;
-  onSelectSuit: (suit: string) => void;
+  onSelectKey: (rankOrSuit: 'rank' | 'suit', newValue: string) => void;
   onSelectReset: () => void;
   selectedRank: string;
   selectedSuit: string;
@@ -13,13 +12,13 @@ interface CustomKeyboardProps {
 const ranks = ['2', '3', '4', '5', '6', '7', '8', '?', '9', 'T', 'J', 'Q', 'K', 'A'];
 const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
 
-const CustomKeyboard: React.FC<CustomKeyboardProps>  = ({ onSelectRank, onSelectSuit, onSelectReset, selectedRank, selectedSuit }) => {
+const CustomKeyboard: React.FC<CustomKeyboardProps>  = ({ onSelectKey, onSelectReset, selectedRank, selectedSuit }) => {
   
   const handlePressRank = (rank: string) => {
     if (rank === '?') {
       onSelectReset();
     } else {
-      onSelectRank(rank);
+      onSelectKey('rank', rank);
     }
   };
 
@@ -41,7 +40,7 @@ const CustomKeyboard: React.FC<CustomKeyboardProps>  = ({ onSelectRank, onSelect
           <TouchableOpacity
             key={suit}
             style={[styles.suitsKey, selectedSuit === suit ? { borderColor: 'blue', borderWidth: 5 } : {}]}
-            onPress={() => onSelectSuit(suit)}
+            onPress={() => onSelectKey('suit', suit)}
           >
             <Image
               style={styles.suitsImage}

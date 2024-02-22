@@ -1,46 +1,114 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, SafeAreaView, Animated } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 
 import PlayerCard from '../components/PlayerCard';
 import CustomKeyboard from '../components/CustomKeyboard';
-import { toggleKeyboard, updatePlayerRank, updatePlayerSuit } from '../redux/actions';
+import { setInitialPlayersState, toggleKeyboard } from '../redux/actions';
 import PageHeader from '../components/PageHeader';
+import { addPlayer, getPlayers, updatePlayerCard } from '../db/players';
+import { Player } from '../db/models';
+import { useDatabase } from '../context/DatabaseContext';
 
 const PlayerScreen = ({ navigation }: { navigation: any }) => {
+  const dispatch = useDispatch();
+  const db = useDatabase();
   const gridData = useSelector((state: AppState) => state.grid);
+  const [players, setPlayers] = useState<Player[]>([]);
+  // const players = [
+  //   { id: 1, name: "John Smith", profit: -200, favHandRank1: "?", favHandSuit1: "suits", favHandRank2: "?", favHandSuit2: "suits", playerNotes: "Aggressive playstyle" },
+  //   { id: 2, name: "John Doe", profit: 100, favHandRank1: "A", favHandSuit1: "hearts", favHandRank2: "K", favHandSuit2: "spades", playerNotes: "Very strategic" },
+  //   { id: 3, name: "Jane Smith", profit: -0, favHandRank1: "Q", favHandSuit1: "diamonds", favHandRank2: "J", favHandSuit2: "clubs", playerNotes: "Aggressive playstyle" },
+  // ];
+  useEffect(() => {
+    dispatch(setInitialPlayersState(players));
+  }, [players.length]);
+  useEffect(() => {
+    const players = [
+      { name: "John Smith", profit: -200, favHandRank1: "?", favHandSuit1: "suits", favHandRank2: "?", favHandSuit2: "suits", playerNotes: "Aggressive playstyle" },
+      { name: "John Doe", profit: 100, favHandRank1: "A", favHandSuit1: "hearts", favHandRank2: "K", favHandSuit2: "spades", playerNotes: "Very strategic" },
+      { name: "Jane Smith", profit: -0, favHandRank1: "Q", favHandSuit1: "diamonds", favHandRank2: "J", favHandSuit2: "clubs", playerNotes: "Aggressive playstyle" },
+    ];
+
+    const loadData = async () => {
+      try {
+        const storedPlayers = await getPlayers(db); // Adjust getPlayers to accept SQLite.Database directly
+        
+        if (storedPlayers.length) {
+          setPlayers(storedPlayers);
+        } else {
+          console.log('Adding new players to the empty database')
+          await addPlayer(db, players[0]);
+          await addPlayer(db, players[1]);
+          await addPlayer(db, players[2]);
+        }
+      } catch (error) {
+        console.error('load Data error', error);
+      }
+    };
+
+    loadData();
+  }, [db]);
+
   const isKeyboardVisible = useSelector((state: AppState) => state.ui.isKeyboardVisible);
   const selectedRank = useSelector((state: AppState) => state.ui.selectedRank);
   const selectedSuit = useSelector((state: AppState) => state.ui.selectedSuit);
   const keyboardHeight = new Animated.Value(0);
   
-  const selectedPlayer = gridData.find(player =>
+  const selectedPlayer = gridData.players.find(player =>
     player.hand.some(hand => hand.selected)
   );
 
-  const selectedPlayerKey = selectedPlayer?.key;
+  const selectedPlayerKey = selectedPlayer?.id;
   const selectedHandIndex = selectedPlayer
     ? selectedPlayer.hand.findIndex(hand => hand.selected)
     : -1;
     
-  const dispatch = useDispatch();
-  const handleSelectRank = (rank: string) => {
+  const handleSelect = async (rankOrSuit: 'rank' | 'suit', newValue: string) => {
     if (selectedPlayerKey !== null) {
-      dispatch(updatePlayerRank(selectedPlayerKey ?? '', selectedHandIndex, rank));
-      dispatch(toggleKeyboard(true, rank, selectedSuit));
+      if (rankOrSuit === 'rank') {
+        await updatePlayerCard(db, {
+          id: selectedPlayerKey ? Number(selectedPlayerKey) : undefined,
+          name: '',
+          profit: 0,
+          favHandRank1: newValue,
+          favHandSuit1: selectedSuit,
+          favHandRank2: newValue,
+          favHandSuit2: selectedSuit,
+          playerNotes: ''
+        }, selectedHandIndex);
+        setPlayers(await getPlayers(db));
+        dispatch(toggleKeyboard(true, newValue, selectedSuit));
+      } else if (rankOrSuit === 'suit') {
+        await updatePlayerCard(db, {
+          id: selectedPlayerKey ? Number(selectedPlayerKey) : undefined,
+          name: '',
+          profit: 0,
+          favHandRank1: selectedRank,
+          favHandSuit1: newValue,
+          favHandRank2: selectedRank,
+          favHandSuit2: newValue,
+          playerNotes: ''
+        }, selectedHandIndex);
+        setPlayers(await getPlayers(db));
+        dispatch(toggleKeyboard(true, selectedRank, newValue));
+      }
     }
   };
-  const handleSelectSuit = (suit: string) => {
+  const handleSelectReset = async () => {
     if (selectedPlayerKey !== null) {
-      dispatch(updatePlayerSuit(selectedPlayerKey ?? '', selectedHandIndex, suit));
-      dispatch(toggleKeyboard(true, selectedRank, suit));
-    }
-  };
-  const handleSelectReset = () => {
-    if (selectedPlayerKey !== null) {
-      dispatch(updatePlayerRank(selectedPlayerKey ?? '', selectedHandIndex, '?'));
-      dispatch(updatePlayerSuit(selectedPlayerKey ?? '', selectedHandIndex, 'suits'));
+      await updatePlayerCard(db, {
+        id: selectedPlayerKey ? Number(selectedPlayerKey) : undefined,
+        name: '',
+        profit: 0,
+        favHandRank1: '?',
+        favHandSuit1: 'suits',
+        favHandRank2: '?',
+        favHandSuit2: 'suits',
+        playerNotes: ''
+      }, selectedHandIndex);
+      setPlayers(await getPlayers(db));
       dispatch(toggleKeyboard(true, '?', 'suits'));
     }
   }
@@ -60,22 +128,24 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PageHeader navigation={navigation}/>
+      <PageHeader navigation={navigation} setPlayers={(updatedPlayers: Player[]) => setPlayers(updatedPlayers)}/>
       <FlatList
-        data={gridData}
+        data={players}
         renderItem={({ item }) => (
           <PlayerCard
-            id={item.key}
+            id={item.id ?? 0}
             name={item.name}
             profit={item.profit}
-            favHandRank1={item.hand[0].favHandRank}
-            favHandSuit1={item.hand[0].favHandSuit}
-            favHandRank2={item.hand[1].favHandRank}
-            favHandSuit2={item.hand[1].favHandSuit}
+            favHandRank1={item.favHandRank1}
+            favHandSuit1={item.favHandSuit1}
+            favHandRank2={item.favHandRank2}
+            favHandSuit2={item.favHandSuit2}
+            playerNotes={item.playerNotes}
+            setPlayers={(updatedPlayers: Player[]) => setPlayers(updatedPlayers)}
           />
         )}
         numColumns={3}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(item) => item.id?.toString() ?? ''}
         contentContainerStyle={[styles.grid, { paddingBottom: isKeyboardVisible ? 120 : 0 }]}
       />
       {isKeyboardVisible && (
@@ -88,8 +158,7 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
           }}
         >
           <CustomKeyboard
-            onSelectRank={handleSelectRank}
-            onSelectSuit={handleSelectSuit}
+            onSelectKey={handleSelect}
             onSelectReset={handleSelectReset}
             selectedRank={selectedRank}
             selectedSuit={selectedSuit}
@@ -103,7 +172,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
     backgroundColor: 'white',
   },
   grid: {
