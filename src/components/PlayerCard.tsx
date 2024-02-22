@@ -5,6 +5,8 @@ import PlayerDetailsModal from './PlayerDetailsModal';
 import { deletePlayer, getPlayers } from '../db/players';
 import { useDatabase } from '../context/DatabaseContext';
 import { Player } from '../db/models';
+import { useDispatch } from 'react-redux';
+import { toggleKeyboard } from '../redux/actions';
 
 interface PlayerCardProps {
   id: number;
@@ -21,12 +23,14 @@ interface PlayerCardProps {
 const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes, setPlayers }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const db = useDatabase();
+  const dispatch = useDispatch();
   const player = { id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes };
 
   const handleDeletePlayer = async (playerId: number) => {
     console.log("Delete player with ID:", playerId);
     await deletePlayer(db, playerId);
     setPlayers(await getPlayers(db));
+    dispatch(toggleKeyboard(false, '?', 'suits')); // Close the keyboard after deletion
     setModalVisible(false); // Close the modal after deletion
   };
   

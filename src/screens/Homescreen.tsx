@@ -63,7 +63,9 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
           {/* Add Buttons Section */}
           <AddButton
             title="Add Session"
-            onPress={() => {}}
+            onPress={() =>
+              navigation.navigate('Sessions')
+            }
             buttonBackgroundColor='black'
             buttonTextColor='white'
             activeOpacity={0.4}

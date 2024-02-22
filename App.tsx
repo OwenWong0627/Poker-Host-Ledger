@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import PlayerScreen from './src/screens/PlayerScreen';
 import { DatabaseProvider } from './src/context/DatabaseContext';
+import SessionsScreen from './src/screens/SessionsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ export default function App() {
               component={HomeScreen}
             />
             <Stack.Screen name="Players" component={PlayerScreen} />
+            <Stack.Screen name="Sessions" component={SessionsScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </DatabaseProvider>
