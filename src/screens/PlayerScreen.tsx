@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, FlatList, SafeAreaView, Animated } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../redux/store';
 
 import PlayerCard from '../components/PlayerCard';
 import CustomKeyboard from '../components/CustomKeyboard';
-import { setInitialPlayersState, toggleKeyboard } from '../redux/actions';
 import PageHeader from '../components/PageHeader';
+import { AppState } from '../redux/store';
+import { setInitialPlayersState, toggleKeyboard } from '../redux/actions';
 import { addPlayer, getPlayers, updatePlayerCard } from '../db/players';
 import { Player } from '../db/models';
 import { useDatabase } from '../context/DatabaseContext';
@@ -128,7 +128,7 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PageHeader navigation={navigation} setPlayers={(updatedPlayers: Player[]) => setPlayers(updatedPlayers)}/>
+      <PageHeader navigation={navigation} pageName='Players' setPlayers={(updatedPlayers: Player[]) => setPlayers(updatedPlayers)}/>
       <FlatList
         data={players}
         renderItem={({ item }) => (

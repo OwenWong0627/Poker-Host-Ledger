@@ -1,8 +1,7 @@
 import * as SQLite from 'expo-sqlite';
-import { Database } from 'expo-sqlite';
 import { Player } from "./models";
 
-export const addPlayer = async (db: Database, player: Player): Promise<void> => {
+export const addPlayer = async (db: SQLite.Database, player: Player): Promise<void> => {
   const query = `INSERT INTO Players (name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes) VALUES (?, ?, ?, ?, ?, ?, ?)`;
   const values = [
     player.name,
@@ -33,7 +32,7 @@ export const addPlayer = async (db: Database, player: Player): Promise<void> => 
   });
 };
 
-export const getPlayers = async (db: Database): Promise<Player[]> => {
+export const getPlayers = async (db: SQLite.Database): Promise<Player[]> => {
   const query = `SELECT * FROM Players`;
 
   return new Promise((resolve, reject) => {
@@ -59,7 +58,35 @@ export const getPlayers = async (db: Database): Promise<Player[]> => {
   });
 };
 
-export const updatePlayerCard = async (db: Database, player: Player, handIndex: number) => {
+export const getPlayerName = async (db: SQLite.Database, id: number): Promise<string> => {
+  const query = `SELECT name FROM Players WHERE id = ?`;
+
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        query,
+        [id],
+        (_, { rows }) => {
+          if (rows.length > 0) {
+            const name = rows._array[0].name;
+            console.log(`Player name fetched: ${name}`);
+            resolve(name);
+          } else {
+            reject(`Player with id ${id} not found`);
+            return false;
+          }
+        },
+        (_, error) => {
+          console.error(error);
+          reject(`Failed to get player name`);
+          return false; // Stop the transaction
+        }
+      );
+    });
+  });
+}
+
+export const updatePlayerCard = async (db: SQLite.Database, player: Player, handIndex: number) => {
   const queryCardOne = `
     UPDATE Players
     SET favHandRank1 = ?, favHandSuit1 = ?
@@ -120,7 +147,7 @@ export const updatePlayerCard = async (db: Database, player: Player, handIndex: 
   }
 };
 
-export const updatePlayer = async (db: Database, player: Player) => {
+export const updatePlayer = async (db: SQLite.Database, player: Player) => {
   const query = `
     UPDATE Players
     SET name = ?, profit = ?, playerNotes = ?
@@ -148,7 +175,7 @@ export const updatePlayer = async (db: Database, player: Player) => {
   });
 };
 
-export const deletePlayer = async (db: Database, id: number) => {
+export const deletePlayer = async (db: SQLite.Database, id: number) => {
   const query = `DELETE FROM Players WHERE id = ?`;
 
   return new Promise<void>((resolve, reject) => {

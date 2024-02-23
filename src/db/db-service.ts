@@ -1,10 +1,9 @@
 import * as SQLite from 'expo-sqlite';
-import { Database } from 'expo-sqlite';
 
-const databaseName = 'PokerDBv16.db';
+const databaseName = 'PokerDBv17.db';
 
 // Initialize the database
-export const getDBConnection = async (): Promise<Database> => {
+export const getDBConnection = async (): Promise<SQLite.Database> => {
   try {
     if (!databaseName || databaseName.trim() === '') {
       throw new Error('Database name is missing or empty');
@@ -18,7 +17,7 @@ export const getDBConnection = async (): Promise<Database> => {
   }
 };
 
-export const createTable = async (db: Database): Promise<void> => {
+export const createTable = async (db: SQLite.Database): Promise<void> => {
   // SQL query to create the Players table
   const playersQuery = `
     CREATE TABLE IF NOT EXISTS Players (
@@ -31,6 +30,30 @@ export const createTable = async (db: Database): Promise<void> => {
       favHandSuit2 TEXT,
       playerNotes TEXT
     );`;
+  
+  const sessionsQuery = `
+    CREATE TABLE IF NOT EXISTS Sessions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT,
+      stakes TEXT,
+      cashIn REAL,
+      cashOut REAL,
+      location TEXT,
+      host INTEGER,
+      gameType TEXT,
+      FOREIGN KEY (host) REFERENCES Players(id)
+    );
+  `;
+
+  const sessionPlayersQuery = `
+    CREATE TABLE IF NOT EXISTS session_players (
+      session_id INTEGER,
+      player_id INTEGER,
+      FOREIGN KEY (session_id) REFERENCES sessions(id),
+      FOREIGN KEY (player_id) REFERENCES Players(id),
+      PRIMARY KEY (session_id, player_id)
+    );
+  `;
 
   return new Promise<void>((resolve, reject) => {
     db.transaction(tx => {
@@ -42,6 +65,30 @@ export const createTable = async (db: Database): Promise<void> => {
         reject(new Error(`Failed to create tables: ${error?.message}`));
         return false;
       });
+
+      tx.executeSql(sessionsQuery, [], () => {
+        console.log('Sessions Table Created.');
+        resolve();
+      }, (_txError, error) => {
+        console.error('Failed to create tables:', error);
+        reject(new Error(`Failed to create tables: ${error?.message}`));
+        return false;
+      });
+
+      tx.executeSql(playersQuery, [], () => {
+        console.log('Session Players Joint Table Created.');
+        resolve();
+      }, (_txError, error) => {
+        console.error('Failed to create tables:', error);
+        reject(new Error(`Failed to create tables: ${error?.message}`));
+        return false;
+      });
+    }, (transactionError) => {
+      console.error('Transaction error:', transactionError);
+      reject(new Error('Failed to create tables within the transaction.'));
+    }, () => {
+      console.log('All tables created successfully.');
+      resolve();
     });
   });
 };

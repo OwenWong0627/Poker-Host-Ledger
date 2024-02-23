@@ -8,3 +8,19 @@ export type Player = {
   favHandSuit2: string;
   playerNotes: string;
 }
+
+export type Session = {
+  id?: number;
+  date: string;
+  stakes: string;
+  cashIn: number;
+  cashOut: number;
+  location: string;
+  host: number;
+  gameType: string;
+}
+
+export type SessionPlayer = {
+  sessionId: number;
+  playerId: number;
+}
