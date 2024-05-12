@@ -2,10 +2,9 @@ import * as SQLite from 'expo-sqlite';
 import { Player } from "./models";
 
 export const addPlayer = async (db: SQLite.Database, player: Player): Promise<void> => {
-  const query = `INSERT INTO Players (name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  const query = `INSERT INTO Players (name, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes) VALUES (?, ?, ?, ?, ?, ?)`;
   const values = [
     player.name,
-    player.profit,
     player.favHandRank1,
     player.favHandSuit1,
     player.favHandRank2,
@@ -150,11 +149,10 @@ export const updatePlayerCard = async (db: SQLite.Database, player: Player, hand
 export const updatePlayer = async (db: SQLite.Database, player: Player) => {
   const query = `
     UPDATE Players
-    SET name = ?, profit = ?, playerNotes = ?
+    SET name = ?, playerNotes = ?
     WHERE id = ?`;
   const values = [
     player.name,
-    player.profit,
     player.playerNotes,
     player.id
   ];
@@ -174,6 +172,7 @@ export const updatePlayer = async (db: SQLite.Database, player: Player) => {
     });
   });
 };
+
 
 export const deletePlayer = async (db: SQLite.Database, id: number) => {
   const query = `DELETE FROM Players WHERE id = ?`;

@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-const databaseName = 'PokerDBv17.db';
+const databaseName = 'PokerDBv90.db';
 
 // Initialize the database
 export const getDBConnection = async (): Promise<SQLite.Database> => {
@@ -23,7 +23,6 @@ export const createTable = async (db: SQLite.Database): Promise<void> => {
     CREATE TABLE IF NOT EXISTS Players (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT,
-      profit REAL,
       favHandRank1 TEXT,
       favHandSuit1 TEXT,
       favHandRank2 TEXT,
@@ -36,8 +35,6 @@ export const createTable = async (db: SQLite.Database): Promise<void> => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT,
       stakes TEXT,
-      cashIn REAL,
-      cashOut REAL,
       location TEXT,
       host INTEGER,
       gameType TEXT,
@@ -49,7 +46,9 @@ export const createTable = async (db: SQLite.Database): Promise<void> => {
     CREATE TABLE IF NOT EXISTS session_players (
       session_id INTEGER,
       player_id INTEGER,
-      FOREIGN KEY (session_id) REFERENCES sessions(id),
+      cash_in REAL,
+      cash_out REAL,
+      FOREIGN KEY (session_id) REFERENCES Sessions(id),
       FOREIGN KEY (player_id) REFERENCES Players(id),
       PRIMARY KEY (session_id, player_id)
     );
@@ -75,7 +74,7 @@ export const createTable = async (db: SQLite.Database): Promise<void> => {
         return false;
       });
 
-      tx.executeSql(playersQuery, [], () => {
+      tx.executeSql(sessionPlayersQuery, [], () => {
         console.log('Session Players Joint Table Created.');
         resolve();
       }, (_txError, error) => {

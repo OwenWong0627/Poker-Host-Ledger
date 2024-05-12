@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
 import CardField from './CardField';
-import PlayerDetailsModal from './PlayerDetailsModal';
+import PlayerDetailsModal from '../modals/PlayerDetailsModal';
 import { deletePlayer, getPlayers } from '../db/players';
 import { useDatabase } from '../context/DatabaseContext';
 import { Player } from '../db/models';
 import { useDispatch } from 'react-redux';
 import { toggleKeyboard } from '../redux/actions';
+import { addDollarSign } from '../utils/helpers';
 
 interface PlayerCardProps {
   id: number;
@@ -32,18 +33,6 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1,
     setPlayers(await getPlayers(db));
     dispatch(toggleKeyboard(false, '?', 'suits')); // Close the keyboard after deletion
     setModalVisible(false); // Close the modal after deletion
-  };
-  
-  const addDollarSign = (amount: number) => {
-    if (amount < 0) {
-      return '-$' + Math.abs(amount).toFixed(2);
-    }
-    else if (amount === undefined || amount === null) {
-      return '$0.00';
-    }
-    else {
-      return '+$' + amount.toFixed(2);
-    }
   };
 
   return (
@@ -84,8 +73,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingBottom: 10,
     margin: 5,
-    width: 120, // Set your desired width
-    height: 120, // Set your desired height
+    width: 110, // Set your desired width
+    height: 110, // Set your desired height
   },
   gridTextField: {
     width: '100%',

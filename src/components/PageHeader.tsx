@@ -3,15 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { resetGrid, toggleKeyboard } from '../redux/actions';
 import { Player, Session } from '../db/models';
-import AddPlayerModal from '../modals/AddPlayerModal';
+import AddNewPlayerModal from '../modals/AddNewPlayerModal';
 import { addPlayer, getPlayers } from '../db/players';
 import { useDatabase } from '../context/DatabaseContext';
 import AddSessionModal from '../modals/AddSessionModal';
 import { addSession, getSessions } from '../db/sessions';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 interface PageHeaderProps {
-  navigation: any;
-  pageName: string;
+  navigation?: any;
+  pageName?: string;
   setPlayers?: (players: Player[]) => void;
   setSessions?: (sessions: Session[]) => void;
 }
@@ -45,7 +46,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({ navigation, pageName, setPlayer
 
   return (
     <View style={styles.header}>
-      <AddPlayerModal
+      <AddNewPlayerModal
         visible={pageName === 'Players' && modalVisible}
         onClose={() => setModalVisible(false)}
         onAdd={handleAddPlayer}
@@ -56,10 +57,10 @@ const PageHeader: React.FC<PageHeaderProps> = ({ navigation, pageName, setPlayer
         onAdd={handleAddSession}
       />
       <TouchableOpacity style={styles.headerButton} onPress={handleReturn}>
-        <Text style={styles.buttonText}>←</Text>
+        <MaterialIcons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.headerButton} onPress={handleAddForm}>
-        <Text style={styles.buttonText}>+</Text>
+      <MaterialIcons name="add" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );

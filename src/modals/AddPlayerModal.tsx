@@ -1,67 +1,74 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Modal, Button, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Modal, StyleSheet, Button, Text } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useDatabase } from '../context/DatabaseContext';
+import { getPlayers } from '../db/players';
 import { Player } from '../db/models';
 
 interface AddPlayerModalProps {
   visible: boolean;
+  onAddExistingPlayer: (playerId: number) => void;
   onClose: () => void;
-  onAdd: (newPlayer: Player) => void;
 }
 
-const AddPlayerModal: React.FC<AddPlayerModalProps> = ({ visible, onClose, onAdd }) => {
-  const baseNewPlayer = {
-    name: '',
-    profit: '',
-    favHandRank1: '?',
-    favHandSuit1: 'suits',
-    favHandRank2: '?',
-    favHandSuit2: 'suits',
-    playerNotes: '',
-  };
-  const [newPlayer, setNewPlayer] = useState(baseNewPlayer);
+const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
+  visible,
+  onAddExistingPlayer,
+  onClose,
+}) => {
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number>(1);
+  const db = useDatabase();
 
-  const handleAddPlayer = () => {
-    onAdd({...newPlayer, profit: parseFloat(newPlayer.profit)});
+  const handleAddExistingPlayerToSession = () => {
+    onAddExistingPlayer(selectedPlayerId);
     onClose();
-    setNewPlayer(baseNewPlayer);
+    setSelectedPlayerId(1);
   };
 
   const handleClose = () => {
     onClose();
-    setNewPlayer(baseNewPlayer);
+    setSelectedPlayerId(1);
   }
-  
+
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      try {
+        const fetchedPlayers = await getPlayers(db);
+        setPlayers(fetchedPlayers);
+      } catch (error) {
+        console.error('Failed to fetch players:', error);
+      }
+    };
+
+    if (visible) {
+      fetchPlayers();
+    }
+  }, [visible, db]);
+
   return (
     <Modal
-      animationType="fade"
+      animationType="slide"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setNewPlayer({ ...newPlayer, name: text })}
-            value={newPlayer.name}
-            placeholder="Name"
+          <Text>Select an existing player:</Text>
+          <Picker
+            selectedValue={selectedPlayerId}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedPlayerId(itemValue)}
+          >
+            {players.map((player) => (
+              <Picker.Item key={player.id} label={player.name} value={player.id} />
+            ))}
+          </Picker>
+          <Button
+            title="Add Selected Player"
+            onPress={handleAddExistingPlayerToSession}
           />
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setNewPlayer({ ...newPlayer, profit: text })}
-            value={newPlayer.profit}
-            placeholder="Profit"
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setNewPlayer({ ...newPlayer, playerNotes: text })}
-            value={newPlayer.playerNotes}
-            placeholder="Player Notes"
-            multiline // Allows for multiline input
-          />
-          {/* Add more TextInput components for each property of the player */}
-          <Button title="Add Player" onPress={handleAddPlayer} />
           <Button title="Cancel" onPress={handleClose} />
         </View>
       </View>
@@ -74,8 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 22,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    marginTop: 22,
   },
   modalView: {
     margin: 20,
@@ -92,13 +98,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    width: 200,
+  picker: {
+    height: 50,
+    width: 150,
   },
+  // ... add other styles you may need
 });
 
 export default AddPlayerModal;

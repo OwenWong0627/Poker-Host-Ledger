@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   favHandCard: {
-    width: 50,
+    width: 45,
     height: 35,
     flexDirection: 'row',
     alignItems: 'center',

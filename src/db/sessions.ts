@@ -3,10 +3,10 @@ import { Session } from './models';
 
 export const addSession = async (db: SQLite.Database, session: Session): Promise<void> => {
   const query = `
-    INSERT INTO Sessions (date, stakes, cashIn, cashOut, location, host, gameType) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO Sessions (date, stakes, location, host, gameType) 
+    VALUES (?, ?, ?, ?, ?)
   `;
-  const params = [session.date, session.stakes, session.cashIn, session.cashOut, session.location, session.host, session.gameType];
+  const params = [session.date, session.stakes, session.location, session.host, session.gameType];
 
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -42,14 +42,12 @@ export const getSessions = async (db: SQLite.Database): Promise<Session[]> => {
 export const updateSession = async (db: SQLite.Database, session: Session ): Promise<void> => {
   const query = `
     UPDATE Sessions
-    SET date = ?, stakes=?, cashIn = ?, cashOut = ?, location = ?, host = ?, gameType = ?
+    SET date = ?, stakes=?, location = ?, host = ?, gameType = ?
     WHERE id = ?
   `;
   const params = [
     session.date, 
     session.stakes,
-    session.cashIn, 
-    session.cashOut, 
     session.location, 
     session.host, 
     session.gameType, 

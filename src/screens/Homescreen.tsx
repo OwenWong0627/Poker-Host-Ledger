@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
 
 import AddButton from '../components/AddButton';
 import DiamondDate from '../components/DiamondDate';
 import StatsCircle from '../components/StatsCircle';
+import { useDatabase } from '../context/DatabaseContext';
+import { getSessions } from '../db/sessions';
+import { addDollarSign } from '../utils/helpers';
+import { getPlayers } from '../db/players';
 
 const HomeScreen = ({navigation}: {navigation: any}) => {
+  // const db = useDatabase();
 
   const [dates, setDates] = useState(['Jan 11', 'May 10', 'Apr 1', 'Feb 30', 'Dec 29']);
+  const [hostProfit, setHostProfit] = useState(426.85);
+  const [numOfSessions, setNumOfSessions] = useState(20);
+  const [moneyLost, setMoneyLost] = useState(-20.50);
 
   const splitDatesIntoRows = (datesArray: string[]) => {
     const displayDates = datesArray.length > 5 ? datesArray.slice(0, 5) : datesArray;
@@ -33,11 +41,27 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
     });
   };
 
+  // useEffect(() => {
+
+  //   const loadData = async () => {
+  //     try {
+  //       // const fetchedSessions = await getSessions(db);
+  //       // const fetchedPlayers = await getPlayers(db);
+  //       // setNumOfSessions(fetchedSessions.length);
+  //       // const host = fetchedPlayers.find(player => player.id === 1);
+  //       // console.log(host)
+  //       // setHostProfit(host?.profit || 0);
+  //     } catch (error) {
+  //       console.error('load Data error', error);
+  //     }
+  //   };
+  //   loadData();
+  // }, [db]);
+
   return (
     <View style={styles.screen}>
       <ScrollView>
         <View style={styles.container}>
-          {/* Logo Section */}
           <Image
             style={styles.logo}
             source={require('../assets/poker-logo.png')}
@@ -45,9 +69,9 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
 
           {/* Stats Section */}
           <View style={styles.statsRow}>
-            <StatsCircle amount="+$426.85" subtext="Lifetime +/-" />
-            <StatsCircle amount="20" subtext="Sessions" />
-            <StatsCircle amount="-$20.50" subtext="Money Lost" />
+            <StatsCircle amount={addDollarSign(hostProfit)} subtext="Lifetime +/-" />
+            <StatsCircle amount={numOfSessions.toString()} subtext="Sessions" />
+            <StatsCircle amount={addDollarSign(moneyLost)} subtext="Money Lost" />
           </View>
 
           {/* Recent Sessions Section */}

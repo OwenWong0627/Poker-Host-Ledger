@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   suitsKey: {
-    width: '47%',
+    width: '46%',
     height: 40,
     margin: 1,
     borderWidth: 1,

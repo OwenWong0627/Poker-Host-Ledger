@@ -1,8 +1,7 @@
-// PlayerDetailsModal.js
-
 import React from 'react';
 import { Modal, View, Text, Button, StyleSheet } from 'react-native';
 import { Player } from '../db/models';
+import { addDollarSign } from '../utils/helpers';
 
 interface PlayerDetailsModalProps {
   visible: boolean;
@@ -12,17 +11,6 @@ interface PlayerDetailsModalProps {
 }
 
 const PlayerDetailsModal: React.FC<PlayerDetailsModalProps> = ({ visible, onClose, player, onDelete }) => {
-  const addDollarSign = (amount: number) => {
-    if (amount < 0) {
-      return '-$' + Math.abs(amount).toFixed(2);
-    }
-    else if (amount === undefined || amount === null) {
-      return '$0.00';
-    }
-    else {
-      return '+$' + amount.toFixed(2);
-    }
-  };
 
   return (
     <Modal
@@ -34,9 +22,10 @@ const PlayerDetailsModal: React.FC<PlayerDetailsModalProps> = ({ visible, onClos
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Text style={styles.modalText}>Name: {player.name}</Text>
-          <Text style={styles.modalText}>Profit: {addDollarSign(player.profit)}</Text>
+          {/* <Text style={styles.modalText}>Profit: {addDollarSign(player.profit)}</Text> */}
           <Text style={styles.modalText}>Player Notes: {player.playerNotes}</Text>
-          <Button onPress={() => onDelete(player.id!)} title="Delete Player" color="#FF0000" />
+          {player.id === 1 && <Button disabled={true} title="Host can not be deleted" color="#808080" />}
+          {player.id !== 1 && <Button onPress={() => onDelete(player.id!)} title="Delete Player" color="#FF0000" />}
           <Button onPress={onClose} title="Close" color="#000000" />
         </View>
       </View>

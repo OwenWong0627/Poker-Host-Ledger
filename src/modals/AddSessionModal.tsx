@@ -15,7 +15,7 @@ interface AddSessionModalProps {
 const AddSessionModal: React.FC<AddSessionModalProps> = ({ visible, onClose, onAdd }) => {
   const baseNewSession = {
     date: '',
-    stakes: '',
+    stakes: '¢5/¢10',
     cashIn: 0,
     cashOut: 0,
     location: '',
@@ -34,7 +34,7 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({ visible, onClose, onA
         const fetchedPlayers = await getPlayers(db);
         setPlayers(fetchedPlayers);
         if (fetchedPlayers.length > 0) {
-          setNewSession(prev => ({ ...prev, host: fetchedPlayers[0]?.id || 0 }));
+          setNewSession(prev => ({ ...prev, host: fetchedPlayers[0]?.id || 1 }));
         }
       } catch (error) {
         console.error('Failed to fetch host:', error);
@@ -55,12 +55,12 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({ visible, onClose, onA
     };
     onAdd(sessionToAdd);
     onClose();
-    setNewSession({ ...newSession, date: '', cashIn: 0, cashOut: 0, host: players[0]?.id || 0 });
+    setNewSession({ ...newSession, date: '', host: players[0]?.id || 0 });
   };
 
   const handleClose = () => {
     onClose();
-    setNewSession({ ...newSession, date: '', cashIn: 0, cashOut: 0, host: players[0]?.id || 0 }); // Reset the state
+    setNewSession({ ...newSession, date: '', host: players[0]?.id || 0 }); // Reset the state
   };
 
 
@@ -97,26 +97,20 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({ visible, onClose, onA
               style={styles.datePicker}
             />
           )}
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setNewSession({ ...newSession, stakes: text })}
-            value={newSession.stakes}
-            placeholder="Stakes"
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setNewSession({ ...newSession, cashIn: parseFloat(text) })}
-            value={newSession.cashIn.toString()}
-            placeholder="Cash In"
-            keyboardType="numeric"
-          />
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => setNewSession({ ...newSession, cashOut: parseFloat(text) })}
-            value={newSession.cashOut.toString()}
-            placeholder="Cash Out"
-            keyboardType="numeric"
-          />
+          <Picker
+            selectedValue={newSession.stakes}
+            style={styles.picker}
+            onValueChange={(itemValue, itemIndex) => {
+              setNewSession({ ...newSession, stakes: itemValue })
+            }}>
+            <Picker.Item label="¢1/¢2" value="¢1/¢2" />
+            <Picker.Item label="¢2/¢5" value="¢2/¢5" />
+            <Picker.Item label="¢5/¢10" value="¢5/¢10" />
+            <Picker.Item label="¢10/¢25" value="¢10/¢25" />
+            <Picker.Item label="¢25/¢25" value="¢25/¢25" />
+            <Picker.Item label="¢25/¢50" value="¢25/¢50" />
+            <Picker.Item label="¢50/$1" value="¢50/$1" />
+          </Picker>
           <TextInput
             style={styles.input}
             onChangeText={(text) => setNewSession({ ...newSession, location: text })}

@@ -25,11 +25,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
     dispatch(setInitialPlayersState(players));
   }, [players.length]);
   useEffect(() => {
-    const players = [
-      { name: "John Smith", profit: -200, favHandRank1: "?", favHandSuit1: "suits", favHandRank2: "?", favHandSuit2: "suits", playerNotes: "Aggressive playstyle" },
-      { name: "John Doe", profit: 100, favHandRank1: "A", favHandSuit1: "hearts", favHandRank2: "K", favHandSuit2: "spades", playerNotes: "Very strategic" },
-      { name: "Jane Smith", profit: -0, favHandRank1: "Q", favHandSuit1: "diamonds", favHandRank2: "J", favHandSuit2: "clubs", playerNotes: "Aggressive playstyle" },
-    ];
 
     const loadData = async () => {
       try {
@@ -39,9 +34,10 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
           setPlayers(storedPlayers);
         } else {
           console.log('Adding new players to the empty database')
-          await addPlayer(db, players[0]);
-          await addPlayer(db, players[1]);
-          await addPlayer(db, players[2]);
+          await addPlayer(db, 
+            { name: "Host", favHandRank1: "?", favHandSuit1: "suits", favHandRank2: "?", favHandSuit2: "suits", playerNotes: "" }
+          );
+          setPlayers(await getPlayers(db));
         }
       } catch (error) {
         console.error('load Data error', error);
@@ -71,7 +67,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
         await updatePlayerCard(db, {
           id: selectedPlayerKey ? Number(selectedPlayerKey) : undefined,
           name: '',
-          profit: 0,
           favHandRank1: newValue,
           favHandSuit1: selectedSuit,
           favHandRank2: newValue,
@@ -84,7 +79,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
         await updatePlayerCard(db, {
           id: selectedPlayerKey ? Number(selectedPlayerKey) : undefined,
           name: '',
-          profit: 0,
           favHandRank1: selectedRank,
           favHandSuit1: newValue,
           favHandRank2: selectedRank,
@@ -101,7 +95,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
       await updatePlayerCard(db, {
         id: selectedPlayerKey ? Number(selectedPlayerKey) : undefined,
         name: '',
-        profit: 0,
         favHandRank1: '?',
         favHandSuit1: 'suits',
         favHandRank2: '?',
@@ -135,7 +128,7 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
           <PlayerCard
             id={item.id ?? 0}
             name={item.name}
-            profit={item.profit}
+            profit={0}
             favHandRank1={item.favHandRank1}
             favHandSuit1={item.favHandSuit1}
             favHandRank2={item.favHandRank2}
