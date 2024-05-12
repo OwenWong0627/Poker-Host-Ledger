@@ -73,6 +73,9 @@ const SessionDetailsScreen: React.FC<SessionDetailsProps> = ({ route }) => {
           />
         )}
       />
+      {/* <View style={{marginBottom: 10}}>
+        <Button title="Export" onPress={() => {}} />
+      </View> */}
       <Button title="Add Player" onPress={() => setModalVisible(true)} />
     </View>
   );

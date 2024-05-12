@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button, Share, Alert } from 'react-native';
 import { SessionPlayerDetail } from '../db/models';
 import { addDollarSign } from '../utils/helpers';
 import Toggle from "react-native-toggle-element";
@@ -51,6 +51,34 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
       fetchSessionDetails();
     }
   }
+
+  const onShare = async () => {
+    try {
+      let ETmessage = '';
+      if (sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in < 0) {
+        ETmessage = 'ET owen.wong0627@gmail.com ' + addDollarSign(sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in) + ', thanks!';
+      }
+      else if (sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in > 0) {
+        ETmessage = 'I will ET you ' + addDollarSign(sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in);
+      }
+        
+      const result = await Share.share({
+        message: ETmessage,
+        title: 'Ledger Settlement',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  };
 
   return (
     <View style={styles.playerItem}>
@@ -106,6 +134,9 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
               radius: 30,
             }}
           />
+          <View style={{marginTop: 5}}>
+            <Button onPress={onShare} title="Share" />
+          </View>
         </View>
         <View style={styles.container}>
           {values.map((value) => (
