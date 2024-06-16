@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Modal, StyleSheet, Button, Text } from 'react-native';
+import { View, Modal, StyleSheet, Button, Text, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDatabase } from '../context/DatabaseContext';
 import { getPlayers } from '../db/players';
 import { Player } from '../db/models';
@@ -55,7 +56,10 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text>Select an existing player:</Text>
+          <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
+            <MaterialIcons name="close" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Select an existing player:</Text>
           <Picker
             selectedValue={selectedPlayerId}
             style={styles.picker}
@@ -65,11 +69,14 @@ const AddPlayerModal: React.FC<AddPlayerModalProps> = ({
               <Picker.Item key={player.id} label={player.name} value={player.id} />
             ))}
           </Picker>
-          <Button
-            title="Add Selected Player"
-            onPress={handleAddExistingPlayerToSession}
-          />
-          <Button title="Cancel" onPress={handleClose} />
+          <View style={styles.buttonRow}>
+            <Button title="Cancel" onPress={handleClose} color="#F44336" />
+            <Button
+              title="Add Player"
+              onPress={handleAddExistingPlayerToSession}
+              color="#4CAF50"
+            />
+          </View>
         </View>
       </View>
     </Modal>
@@ -81,7 +88,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
   },
   modalView: {
     margin: 20,
@@ -97,12 +103,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: '80%', // Adjust width as needed
   },
   picker: {
     height: 50,
     width: 150,
+    marginBottom: 20,
   },
-  // ... add other styles you may need
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%', // Ensure buttons are full width
+  },
+  closeIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
+  title: {
+    marginBottom: 15,
+    fontWeight: 'bold',
+  },
 });
 
 export default AddPlayerModal;

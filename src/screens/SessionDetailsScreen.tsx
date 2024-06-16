@@ -50,16 +50,14 @@ const SessionDetailsScreen: React.FC<SessionDetailsProps> = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* <PageHeader /> */}
       <AddPlayerModal
         visible={modalVisible}
         onAddExistingPlayer={handleAddExistingPlayer}
         onClose={() => setModalVisible(false)}
       />
-      {/* Header showing total cash in/out */}
       <View style={styles.cashouts}>
-        <Text>Total In: <Text style={{fontWeight: 'bold'}}>${totalCashIn}</Text></Text>
-        <Text>Total Out: <Text style={{fontWeight: 'bold'}}>${totalCashOut}</Text></Text>
+        <Text style={styles.totalLabel}>Total In: <Text style={styles.totalValue}>${totalCashIn.toFixed(2)}</Text></Text>
+        <Text style={styles.totalLabel}>Total Out: <Text style={styles.totalValue}>${totalCashOut.toFixed(2)}</Text></Text>
       </View>
       <FlatList
         data={sessionDetails}
@@ -87,8 +85,17 @@ const styles = StyleSheet.create({
   cashouts: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // paddingTop: 0,
-    padding: 10,
+    marginTop: 30,
+    marginHorizontal: 10,
+    alignItems: 'center',
+  },
+  totalLabel: {
+    fontSize: 18,
+    marginBottom: 10, // Added for spacing between the totals
+  },
+  totalValue: {
+    fontWeight: 'bold',
+    color: '#4CAF50', // A greenish tone for emphasis
   },
 });
 

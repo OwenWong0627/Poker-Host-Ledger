@@ -25,10 +25,6 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
   const values = [5, 10, 25, 50];
 
   const handleUpdatePlayerCashInOut = async () => {
-    console.log('session ID: ' + sessionPlayerDetail.session_id)
-    console.log('player ID ' + sessionPlayerDetail.player_id)
-    console.log('selected value ' + selectedValue)
-    console.log('custom value ' + customValue)
     let cashValue = selectedValue || parseFloat(customValue) || 0;
     if (cashValue === 0) {
       console.log('No cash value selected')
@@ -42,13 +38,12 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
       console.log('Cash In selected');
       cashValue = cashValue + sessionPlayerDetail.cash_in;
       await updatePlayerCashIn(db, sessionPlayerDetail.session_id, sessionPlayerDetail.player_id, cashValue);
-      fetchSessionDetails();
     }
-    else if (inOutToggleValue) {
+    else {
       console.log('Cash Out selected');
       await updatePlayerCashOut(db, sessionPlayerDetail.session_id, sessionPlayerDetail.player_id, cashValue);
-      fetchSessionDetails();
     }
+    fetchSessionDetails();
   }
 
   const onShare = async () => {
@@ -85,10 +80,16 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
         <View style={styles.playerDetail}>
           <Text style={styles.playerName}>{playerName}</Text>
           <View style={styles.cashInOut}>
-            <Text style={styles.cashIn}>In: {addDollarSign(sessionPlayerDetail.cash_in).substring(1)}</Text>
-            <Text style={styles.cashOut}>Out: {addDollarSign(sessionPlayerDetail.cash_out).substring(1)}</Text>
-            <Text style={styles.cashOut}>= {addDollarSign(sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in)}</Text>
+            <View style={styles.cashFlow}>
+              <MaterialIcons name="arrow-downward" size={24} color="green" />
+              <Text style={styles.cashIn}>In: {addDollarSign(sessionPlayerDetail.cash_in)}</Text>
+            </View>
+            <View style={styles.cashFlow}>
+              <MaterialIcons name="arrow-upward" size={24} color="red" />
+              <Text style={styles.cashOut}>Out: {addDollarSign(sessionPlayerDetail.cash_out)}</Text>
+            </View>
           </View>
+          <Text style={styles.profit}>Profit: {addDollarSign(sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in)}</Text>
         </View>
       </TouchableOpacity>
       {isCollapsibleOpen && (
@@ -171,41 +172,53 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
 const styles = StyleSheet.create({
   playerItem: {
     backgroundColor: 'white',
-    paddingTop: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     marginVertical: 5,
+    borderRadius: 10,
+    elevation: 2,
+    flexDirection: 'column',
+  },
+  playerDetail: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  playerName: {
+    fontWeight: 'bold',
+    flex: 1,
+  },
+  cashInOut: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginLeft: -15,
+  },
+  cashFlow: {
+    marginTop: -5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cashIn: {
+    color: 'green',
+  },
+  cashOut: {
+    color: 'red',
+  },
+  profit: {
+    fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'right',
+    flex: 1,
   },
   toggles: {
     flexDirection: 'column',
     alignItems: 'center',
-  },
-  playerDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   playerCollapsible: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 5,
-  },
-  playerName: {
-    width: '15%',
-    marginRight: 10,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cashInOut: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flex: 1,
-  },
-  cashIn: {
-    justifyContent: 'flex-start',
-  },
-  cashOut: {
-    justifyContent: 'flex-end',
   },
 
   container: {
