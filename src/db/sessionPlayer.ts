@@ -178,7 +178,7 @@ export const calculateTotalMoneyLost = async (db: SQLite.Database): Promise<numb
         [],
         (_, { rows }) => {
           if (rows.length > 0) {
-            const totalMoneyLost = rows._array[0].total_money_lost || 0; // Default to 0 if null
+            const totalMoneyLost = rows._array[0].total_money_lost || 0;
             console.log(`Total Money Lost: ${totalMoneyLost}`);
             resolve(totalMoneyLost);
           } else {
@@ -188,7 +188,7 @@ export const calculateTotalMoneyLost = async (db: SQLite.Database): Promise<numb
         (_, error) => {
           console.error(error);
           reject(`Failed to calculate total money lost: ${error}`);
-          return false; // Stop the transaction
+          return false;
         }
       );
     });

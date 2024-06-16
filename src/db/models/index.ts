@@ -12,7 +12,6 @@ export type Session = {
   id?: number;
   date: string;
   stakes: string;
-  location: string;
   host: number;
   gameType: string;
 }

@@ -76,7 +76,10 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
           {/* Stats Section */}
           <View style={styles.statsRow}>
             <StatsCircle amount={addDollarSign(hostProfit)} subtext="Lifetime +/-" />
-            <StatsCircle amount={numOfSessions.toString()} subtext="Sessions" />
+            {numOfSessions === 1 ?
+              <StatsCircle amount={numOfSessions.toString()} subtext="Session" /> :
+              <StatsCircle amount={numOfSessions.toString()} subtext="Sessions" />
+            }
             <StatsCircle amount={addDollarSign(moneyLost)} subtext="Money Lost" />
           </View>
 

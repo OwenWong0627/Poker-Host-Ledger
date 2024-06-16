@@ -58,20 +58,13 @@ const SessionCard: React.FC<SessionCardProps> = ({ item, onDelete }) => {
     <TouchableOpacity
       onPress={() => navigation.navigate('SessionDetailsScreen', { sessionId: item.id })}
     >
-      {/* <SessionDetailsModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        player={player}
-        onDelete={handleDeletePlayer}
-      /> */}
       <View style={styles.sessionItem}>
         <View style={styles.sessionDetails}>
           <Text style={styles.sessionDate}>{item.date}</Text>
           <Text>Stakes: {item.stakes}</Text>
           {/* <Text style={styles.sessionCashIn}>Cash In: ${cashIn.toFixed(2)}</Text>
           <Text style={styles.sessionCashOut}>Cash Out: ${cashOut.toFixed(2)}</Text> */}
-          <Text style={styles.sessionLocation}>Location: {item.location}</Text>
-          <Text style={styles.sessionLocation}>Host: {hostName}</Text>
+          <Text style={styles.sessionHost}>Host: {hostName}</Text>
         </View>
         <TouchableOpacity onPress={() => onDelete(item.id!)} style={styles.addButton}>
           <MaterialIcons name="delete" size={24} color="red" />
@@ -102,7 +95,7 @@ const styles = StyleSheet.create({
   sessionCashOut: {
     color: 'red',
   },
-  sessionLocation: {
+  sessionHost: {
     fontStyle: 'italic',
   },
   addButton: {

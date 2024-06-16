@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-const databaseName = 'PokerDBv92.db';
+const databaseName = 'PokerDBv93.db';
 
 // Initialize the database
 export const getDBConnection = async (): Promise<SQLite.Database> => {
@@ -35,7 +35,6 @@ export const createTable = async (db: SQLite.Database): Promise<void> => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT,
       stakes TEXT,
-      location TEXT,
       host INTEGER,
       gameType TEXT,
       FOREIGN KEY (host) REFERENCES Players(id)
