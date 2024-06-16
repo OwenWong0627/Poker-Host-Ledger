@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-const databaseName = 'PokerDBv93.db';
+const databaseName = 'PokerDBv94.db';
 
 // Initialize the database
 export const getDBConnection = async (): Promise<SQLite.Database> => {

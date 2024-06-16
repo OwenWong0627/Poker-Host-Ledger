@@ -6,7 +6,7 @@ import PlayerCard from '../components/PlayerCard';
 import CustomKeyboard from '../components/CustomKeyboard';
 import PageHeader from '../components/PageHeader';
 import { AppState } from '../redux/store';
-import { toggleKeyboard } from '../redux/actions';
+import { setInitialPlayersState, toggleKeyboard } from '../redux/actions';
 import { addPlayer, getPlayers, updatePlayerCard } from '../db/players';
 import { Player } from '../db/models';
 import { useDatabase } from '../context/DatabaseContext';
@@ -16,6 +16,9 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
   const db = useDatabase();
   const gridData = useSelector((state: AppState) => state.grid);
   const [players, setPlayers] = useState<Player[]>([]);
+  useEffect(() => {
+    dispatch(setInitialPlayersState(players));
+  }, [players.length]);
   useEffect(() => {
 
     const loadData = async () => {

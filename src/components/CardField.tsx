@@ -29,7 +29,7 @@ const CardField: React.FC<CardFieldProps> = ({ id, favHandIndex, favHandRank, fa
 
   return (
     <TouchableWithoutFeedback onPress={() => handleSelectPlayerCard()}>
-      <View style={[styles.favHandCard, isSelectedIndex === favHandIndex && { borderColor: 'blue', borderWidth: 5 }]}>
+      <View style={[styles.favHandCard, isSelectedIndex === favHandIndex && { borderColor: 'blue', borderWidth: 4.5 }]}>
         <Text style={styles.favHandRank}>{favHandRank}</Text>
         <Image
           style={styles.suitsImage}
