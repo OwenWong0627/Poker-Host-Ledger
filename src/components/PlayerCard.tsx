@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
 import CardField from './CardField';
 import PlayerDetailsModal from '../modals/PlayerDetailsModal';
-import { deletePlayer, getPlayers } from '../db/players';
+import { deletePlayer, getPlayers, updatePlayer } from '../db/players';
 import { deletePlayerFromAllSession, getPlayerProfit } from '../db/sessionPlayer';
 import { useDatabase } from '../context/DatabaseContext';
 import { Player } from '../db/models';
@@ -37,6 +37,12 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, favHandRank1, favHand
     setModalVisible(false); // Close the modal after deletion
   };
 
+  const handleUpdatePlayer = async (player: Player) => {
+    console.log('Updating player:', player);
+    await updatePlayer(db, player);
+    setPlayers(await getPlayers(db));
+  }
+
   useEffect(() => {
     const fetchPlayerProfit = async () => {
       const playerProfit = await getPlayerProfit(db, id);
@@ -57,6 +63,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, favHandRank1, favHand
         onClose={() => setModalVisible(false)}
         player={player}
         onDelete={handleDeletePlayer}
+        onUpdate={handleUpdatePlayer}
       />
       <View style={styles.favHandField}>
         <CardField

@@ -4,6 +4,7 @@ import { createTable, getDBConnection } from '../db/db-service';
 
 interface DatabaseContextType {
   db: SQLite.Database | null;
+  isLoading: boolean;
 }
 
 const DatabaseContext = createContext<DatabaseContextType | null>(null);
@@ -14,28 +15,38 @@ interface DatabaseProviderProps {
 
 export const DatabaseProvider: React.FC<DatabaseProviderProps> = ({ children }) => {
   const [db, setDb] = useState<SQLite.Database | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function initializeDB() {
-      const db = await getDBConnection();
-      setDb(db);
-      await createTable(db);
+      try {
+        const database = await getDBConnection();
+        await createTable(database);
+        setDb(database);
+        setIsLoading(false);  // Set loading to false once the DB is initialized
+      } catch (error) {
+        console.error('Error initializing database:', error);
+      }
     }
-
     initializeDB();
   }, []);
 
   return (
-    <DatabaseContext.Provider value={{ db }}>
-      {children}
+    <DatabaseContext.Provider value={{ db, isLoading }}>
+      {!isLoading ? children : null}
     </DatabaseContext.Provider>
   );
 };
 
 export const useDatabase = (): SQLite.Database => {
   const context = useContext(DatabaseContext);
-  if (!context || !context.db) {
-    throw new Error('useDatabase must be used within a DatabaseProvider and db must be initialized');
+  if (!context) {
+    throw new Error('useDatabase must be used within a DatabaseProvider');
+  }
+  if (context.isLoading || !context.db) {
+    throw new Error('Database is initializing');
   }
   return context.db;
 };
+
+export default DatabaseProvider;
