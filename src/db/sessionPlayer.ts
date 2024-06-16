@@ -28,6 +28,25 @@ export const addPlayerToSession = async (
   });
 };
 
+export const deletePlayerFromAllSession = async (db: SQLite.Database, playerId: number): Promise<void> => {
+  const query = `DELETE FROM session_players WHERE player_id = ?`;
+
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        query,
+        [playerId],
+        () => resolve(),
+        (_, error) => {
+          console.error('Error deleting player from all sessions:', error);
+          reject(error);
+          return false;
+        }
+      );
+    });
+  });
+}
+
 
 export const removePlayerFromSession = async (db: SQLite.Database, sessionId: number, playerId: number): Promise<void> => {
   const query = `DELETE FROM session_players WHERE session_id = ? AND player_id = ?`;
@@ -119,3 +138,60 @@ export const updatePlayerCashOut = async (db: SQLite.Database, sessionId: number
     });
   });
 }
+
+export const getPlayerProfit = async (db: SQLite.Database, playerId: number): Promise<number> => {
+  const query = `
+    SELECT SUM(cash_out - cash_in) as profit
+    FROM session_players
+    WHERE player_id = ?
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        query,
+        [playerId],
+        (_, { rows }) => {
+          const profit = rows._array[0].profit;
+          resolve(profit);
+        },
+        (_, error) => {
+          console.error(error);
+          reject(`Failed to get profit for player_id ${playerId}`);
+          return false;
+        }
+      );
+    });
+  });
+}
+
+export const calculateTotalMoneyLost = async (db: SQLite.Database): Promise<number> => {
+  const query = `
+    SELECT SUM(cash_out - cash_in) AS total_money_lost
+    FROM session_players;
+  `;
+
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        query,
+        [],
+        (_, { rows }) => {
+          if (rows.length > 0) {
+            const totalMoneyLost = rows._array[0].total_money_lost || 0; // Default to 0 if null
+            console.log(`Total Money Lost: ${totalMoneyLost}`);
+            resolve(totalMoneyLost);
+          } else {
+            resolve(0); // Resolve with 0 if no data found
+          }
+        },
+        (_, error) => {
+          console.error(error);
+          reject(`Failed to calculate total money lost: ${error}`);
+          return false; // Stop the transaction
+        }
+      );
+    });
+  });
+};
+

@@ -6,7 +6,7 @@ import PlayerCard from '../components/PlayerCard';
 import CustomKeyboard from '../components/CustomKeyboard';
 import PageHeader from '../components/PageHeader';
 import { AppState } from '../redux/store';
-import { setInitialPlayersState, toggleKeyboard } from '../redux/actions';
+import { toggleKeyboard } from '../redux/actions';
 import { addPlayer, getPlayers, updatePlayerCard } from '../db/players';
 import { Player } from '../db/models';
 import { useDatabase } from '../context/DatabaseContext';
@@ -16,14 +16,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
   const db = useDatabase();
   const gridData = useSelector((state: AppState) => state.grid);
   const [players, setPlayers] = useState<Player[]>([]);
-  // const players = [
-  //   { id: 1, name: "John Smith", profit: -200, favHandRank1: "?", favHandSuit1: "suits", favHandRank2: "?", favHandSuit2: "suits", playerNotes: "Aggressive playstyle" },
-  //   { id: 2, name: "John Doe", profit: 100, favHandRank1: "A", favHandSuit1: "hearts", favHandRank2: "K", favHandSuit2: "spades", playerNotes: "Very strategic" },
-  //   { id: 3, name: "Jane Smith", profit: -0, favHandRank1: "Q", favHandSuit1: "diamonds", favHandRank2: "J", favHandSuit2: "clubs", playerNotes: "Aggressive playstyle" },
-  // ];
-  useEffect(() => {
-    dispatch(setInitialPlayersState(players));
-  }, [players.length]);
   useEffect(() => {
 
     const loadData = async () => {
@@ -128,7 +120,6 @@ const PlayerScreen = ({ navigation }: { navigation: any }) => {
           <PlayerCard
             id={item.id ?? 0}
             name={item.name}
-            profit={0}
             favHandRank1={item.favHandRank1}
             favHandSuit1={item.favHandSuit1}
             favHandRank2={item.favHandRank2}

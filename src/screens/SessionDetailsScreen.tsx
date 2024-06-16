@@ -6,7 +6,6 @@ import { useDatabase } from '../context/DatabaseContext';
 import AddPlayerModal from '../modals/AddPlayerModal';
 import { getPlayerName } from '../db/players';
 import PlayerCollapsible from '../components/PlayerCollapsible';
-import PageHeader from '../components/PageHeader';
 
 interface SessionDetailsProps {
   route: any;
@@ -73,9 +72,6 @@ const SessionDetailsScreen: React.FC<SessionDetailsProps> = ({ route }) => {
           />
         )}
       />
-      {/* <View style={{marginBottom: 10}}>
-        <Button title="Export" onPress={() => {}} />
-      </View> */}
       <Button title="Add Player" onPress={() => setModalVisible(true)} />
     </View>
   );

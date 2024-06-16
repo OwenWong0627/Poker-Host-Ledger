@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
 
 import AddButton from '../components/AddButton';
@@ -8,13 +8,15 @@ import { useDatabase } from '../context/DatabaseContext';
 import { getSessions } from '../db/sessions';
 import { addDollarSign } from '../utils/helpers';
 import { getPlayers } from '../db/players';
+import { calculateTotalMoneyLost, getPlayerProfit } from '../db/sessionPlayer';
+import { useFocusEffect } from '@react-navigation/native';
 
 const HomeScreen = ({navigation}: {navigation: any}) => {
-  // const db = useDatabase();
+  const db = useDatabase();
 
   const [dates, setDates] = useState(['Jan 11', 'May 10', 'Apr 1', 'Feb 30', 'Dec 29']);
-  const [hostProfit, setHostProfit] = useState(426.85);
-  const [numOfSessions, setNumOfSessions] = useState(20);
+  const [hostProfit, setHostProfit] = useState(0);
+  const [numOfSessions, setNumOfSessions] = useState(0);
   const [moneyLost, setMoneyLost] = useState(-20.50);
 
   const splitDatesIntoRows = (datesArray: string[]) => {
@@ -41,22 +43,26 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
     });
   };
 
-  // useEffect(() => {
-
-  //   const loadData = async () => {
-  //     try {
-  //       // const fetchedSessions = await getSessions(db);
-  //       // const fetchedPlayers = await getPlayers(db);
-  //       // setNumOfSessions(fetchedSessions.length);
-  //       // const host = fetchedPlayers.find(player => player.id === 1);
-  //       // console.log(host)
-  //       // setHostProfit(host?.profit || 0);
-  //     } catch (error) {
-  //       console.error('load Data error', error);
-  //     }
-  //   };
-  //   loadData();
-  // }, [db]);
+  useFocusEffect(
+    useCallback(() => {
+      const loadData = async () => {
+        try {
+          const fetchedSessions = await getSessions(db);
+          const fetchedPlayers = await getPlayers(db);
+          const moneyLost = await calculateTotalMoneyLost(db);
+          setMoneyLost(moneyLost);
+          setNumOfSessions(fetchedSessions.length);
+          const host = fetchedPlayers.find(player => player.id === 1);
+          if (host) {
+            setHostProfit(await getPlayerProfit(db, host.id || 1));
+          }
+        } catch (error) {
+          console.error('load Data error', error);
+        }
+      };
+      loadData();
+    }, [db])
+  );
 
   return (
     <View style={styles.screen}>

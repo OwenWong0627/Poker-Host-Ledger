@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback } from 'react-native';
 import CardField from './CardField';
 import PlayerDetailsModal from '../modals/PlayerDetailsModal';
 import { deletePlayer, getPlayers } from '../db/players';
+import { deletePlayerFromAllSession, getPlayerProfit } from '../db/sessionPlayer';
 import { useDatabase } from '../context/DatabaseContext';
 import { Player } from '../db/models';
 import { useDispatch } from 'react-redux';
@@ -12,7 +13,6 @@ import { addDollarSign } from '../utils/helpers';
 interface PlayerCardProps {
   id: number;
   name: string;
-  profit: number;
   favHandRank1: string;
   favHandSuit1: string;
   favHandRank2: string;
@@ -21,19 +21,30 @@ interface PlayerCardProps {
   setPlayers: (players: Player[]) => void;
 }
 
-const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes, setPlayers }) => {
+const PlayerCard: React.FC<PlayerCardProps> = ({ id, name, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes, setPlayers }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [profit, setProfit] = useState<number>(0);
   const db = useDatabase();
   const dispatch = useDispatch();
-  const player = { id, name, profit, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes };
+  const player = { id, name, favHandRank1, favHandSuit1, favHandRank2, favHandSuit2, playerNotes };
 
   const handleDeletePlayer = async (playerId: number) => {
     console.log("Delete player with ID:", playerId);
     await deletePlayer(db, playerId);
+    await deletePlayerFromAllSession(db, playerId);
     setPlayers(await getPlayers(db));
     dispatch(toggleKeyboard(false, '?', 'suits')); // Close the keyboard after deletion
     setModalVisible(false); // Close the modal after deletion
   };
+
+  useEffect(() => {
+    const fetchPlayerProfit = async () => {
+      const playerProfit = await getPlayerProfit(db, id);
+      setProfit(playerProfit);
+    };
+
+    fetchPlayerProfit();
+  }, [db, id]);
 
   return (
     <View style={styles.gridItem}>
@@ -108,8 +119,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     padding: 3,
     borderRadius: 5,
-    // borderColor: 'black',
-    // borderWidth: 1,
   },
   favHandRank: {
     fontSize: 15,

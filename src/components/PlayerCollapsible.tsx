@@ -18,17 +18,17 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
   
   const [inOutToggleValue, setInOutToggleValueValue] = useState(false);
   const [plusMinusToggleValue, setPlusMinusToggleValueValue] = useState(true);
-  const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedValue, setSelectedValue] = useState<number | null>(null);
   const [customValue, setCustomValue] = useState('');
   const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
 
   const values = [5, 10, 25, 50];
 
   const handleUpdatePlayerCashInOut = async () => {
-    console.log(sessionPlayerDetail.session_id)
-    console.log(sessionPlayerDetail.player_id)
-    console.log(selectedValue)
-    console.log(customValue)
+    console.log('session ID: ' + sessionPlayerDetail.session_id)
+    console.log('player ID ' + sessionPlayerDetail.player_id)
+    console.log('selected value ' + selectedValue)
+    console.log('custom value ' + customValue)
     let cashValue = selectedValue || parseFloat(customValue) || 0;
     if (cashValue === 0) {
       console.log('No cash value selected')
@@ -42,7 +42,6 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
       console.log('Cash In selected');
       cashValue = cashValue + sessionPlayerDetail.cash_in;
       await updatePlayerCashIn(db, sessionPlayerDetail.session_id, sessionPlayerDetail.player_id, cashValue);
-      // await updatePlayerProfit(db, sessionPlayerDetail.player_id, cashValue);
       fetchSessionDetails();
     }
     else if (inOutToggleValue) {
@@ -68,12 +67,12 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // shared with activity type of result.activityType
+          console.log(`Content shared using ${result.activityType}.`);
         } else {
-          // shared
+          console.log('Content shared successfully without specific activity type.');
         }
       } else if (result.action === Share.dismissedAction) {
-        // dismissed
+        console.log('Share dismissed by the user.');
       }
     } catch (error: any) {
       Alert.alert(error.message);
@@ -86,8 +85,8 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
         <View style={styles.playerDetail}>
           <Text style={styles.playerName}>{playerName}</Text>
           <View style={styles.cashInOut}>
-            <Text style={styles.cashIn}>In: {addDollarSign(sessionPlayerDetail.cash_in)}</Text>
-            <Text style={styles.cashOut}>Out: {addDollarSign(sessionPlayerDetail.cash_out)}</Text>
+            <Text style={styles.cashIn}>In: {addDollarSign(sessionPlayerDetail.cash_in).substring(1)}</Text>
+            <Text style={styles.cashOut}>Out: {addDollarSign(sessionPlayerDetail.cash_out).substring(1)}</Text>
             <Text style={styles.cashOut}>= {addDollarSign(sessionPlayerDetail.cash_out - sessionPlayerDetail.cash_in)}</Text>
           </View>
         </View>
@@ -97,7 +96,7 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
         <View style={styles.toggles}>
           <Toggle
             value={inOutToggleValue}
-            onPress={(newState) => setInOutToggleValueValue(newState)}
+            onPress={(newState) => setInOutToggleValueValue(newState || false)}
             leftTitle="In"
             rightTitle="Out"
             trackBar={{
@@ -116,7 +115,7 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
           />
           <Toggle
             value={plusMinusToggleValue}
-            onPress={(newState) => setPlusMinusToggleValueValue(newState)}
+            onPress={(newState) => setPlusMinusToggleValueValue(newState || false)}
             leftComponent={
               <MaterialIcons name="horizontal-rule" size={24} color="darkgray" />
             }
@@ -145,7 +144,7 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
               style={[styles.button, selectedValue === value && styles.selectedButton]}
               onPress={() => {
                 setSelectedValue(value);
-                setCustomValue(''); // Reset custom input when a button is selected
+                setCustomValue('');
               }}
             >
               <Text style={styles.buttonText}>{value}</Text>
@@ -157,7 +156,7 @@ const PlayerCollapsible: React.FC<PlayerCollapsibleProps> = ({ sessionPlayerDeta
             value={customValue}
             keyboardType="numeric"
             placeholder="Custom"
-            onFocus={() => setSelectedValue(null)} // Deselect any button when custom input is focused
+            onFocus={() => setSelectedValue(null)}
           />
         </View>
         <TouchableOpacity style={styles.updateButton} onPress={handleUpdatePlayerCashInOut}>
