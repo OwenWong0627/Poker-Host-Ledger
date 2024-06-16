@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Session } from '../db/models';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { Session } from '../db/models';
 import { getPlayerName } from '../db/players';
+import { getPlayersForSession } from '../db/sessionPlayer';
 import { useDatabase } from '../context/DatabaseContext';
 import { useNavigation } from '@react-navigation/native';
-import { getPlayersForSession } from '../db/sessionPlayer';
-// import SessionDetailsModal from '../modals/SessionDetailsModal';
 
 interface SessionCardProps {
   item: Session;
@@ -45,31 +44,47 @@ const SessionCard: React.FC<SessionCardProps> = ({ item, onDelete }) => {
         console.error('Failed to fetch players:', error);
       }
     }
-
+    
     fetchHostName();
-    fetchCashInOut();
-  }, [db]);
+    fetchCashInOut();    
+  }, [item, db]);
 
-  const handleDeleteSession = async (sessionId: number) => {
-    await onDelete(sessionId);
+  const formatDateDisplay = (isoDate: string | number | Date) => {
+    const date = new Date(isoDate);
+    return { 
+      day: date.getDate(), 
+      month: date.toLocaleString('default', { month: 'short' }) 
+    };
   };
+
+  const { day, month } = formatDateDisplay(item.date);
 
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('SessionDetailsScreen', { sessionId: item.id })}
+      style={styles.sessionItem}
     >
-      <View style={styles.sessionItem}>
-        <View style={styles.sessionDetails}>
-          <Text style={styles.sessionDate}>{item.date}</Text>
-          <Text>Stakes: {item.stakes}</Text>
-          {/* <Text style={styles.sessionCashIn}>Cash In: ${cashIn.toFixed(2)}</Text>
-          <Text style={styles.sessionCashOut}>Cash Out: ${cashOut.toFixed(2)}</Text> */}
-          <Text style={styles.sessionHost}>Host: {hostName}</Text>
-        </View>
-        <TouchableOpacity onPress={() => onDelete(item.id!)} style={styles.addButton}>
-          <MaterialIcons name="delete" size={24} color="red" />
-        </TouchableOpacity>
+       <View style={styles.dateContainer}>
+        <Text style={styles.sessionDay}>{day}</Text>
+        <Text style={styles.sessionMonth}>{month}</Text>
       </View>
+      <View style={styles.detailsContainer}>
+        <View style={styles.detailRow}>
+          <MaterialIcons name="person" size={20} color="#666" />
+          <Text style={styles.detailText}>{hostName}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <MaterialIcons name="arrow-upward" size={20} color="#4CAF50" />
+          <Text style={styles.detailText}>${cashIn.toFixed(2)}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <MaterialIcons name="arrow-downward" size={20} color="#F44336" />
+          <Text style={styles.detailText}>${cashOut.toFixed(2)}</Text>
+        </View>
+      </View>
+      <TouchableOpacity onPress={() => onDelete(item.id!)} style={styles.iconButton}>
+        <MaterialIcons name="delete" size={24} color="red" />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
@@ -78,32 +93,44 @@ const styles = StyleSheet.create({
   sessionItem: {
     flexDirection: 'row',
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    margin: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sessionDetails: {
-    flex: 1,
+  dateContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 20,
+    backgroundColor: '#e0e0e0',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 2,
+    marginRight: 12,
   },
-  sessionDate: {
+  sessionDay: {
+    fontSize: 22,
     fontWeight: 'bold',
   },
-  sessionCashIn: {
-    color: 'green',
+  sessionMonth: {
+    fontSize: 16,
   },
-  sessionCashOut: {
-    color: 'red',
+  detailsContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
-  sessionHost: {
-    fontStyle: 'italic',
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
   },
-  addButton: {
-    marginLeft: 10,
+  detailText: {
+    marginLeft: 5,
+    fontSize: 16,
+  },
+  iconButton: {
     padding: 10,
-  },
-  addButtonText: {
-    fontSize: 24,
   },
 });
 
