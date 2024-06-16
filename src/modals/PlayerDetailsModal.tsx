@@ -35,24 +35,20 @@ const PlayerDetailsModal: React.FC<PlayerDetailsModalProps> = ({
 
   return (
     <Modal
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <View style={styles.header}>
-            {!editMode && (
-              <MaterialIcons
-                name="edit"
-                size={24}
-                color="black"
-                onPress={() => setEditMode(true)}
-                style={styles.editIcon}
-              />
-            )}
-          </View>
+          <MaterialIcons
+            name="close"
+            size={24}
+            color="black"
+            onPress={handleClose}
+            style={styles.closeIcon}
+          />
           {editMode ? (
             <>
               <TextInput
@@ -68,17 +64,34 @@ const PlayerDetailsModal: React.FC<PlayerDetailsModalProps> = ({
                 placeholder="Player Notes"
                 multiline
               />
+              <View style={styles.buttonGroup}>
+                {!editMode && <View style={styles.buttonContainer}>
+                  <Button onPress={() => setEditMode(false)} title="Cancel" color="#757575" />
+                </View> }
+                {player.id !== 1 && (
+                  <View style={styles.buttonContainer}>
+                    <Button onPress={() => onDelete(player.id!)} title="Delete Player" color="#FF1744" />
+                  </View>
+                )}
+                <View style={styles.buttonContainer}>
+                  <Button onPress={handleUpdate} title="Save" color="#00C853" />
+                </View>
+              </View>
             </>
           ) : (
             <>
-              <Text style={styles.modalText}>Name: {name}</Text>
-              <Text style={styles.modalText}>Player Notes: {playerNotes}</Text>
+              <Text style={styles.modalName}>{name? name : 'No Name'}</Text>
+              <Text style={styles.modalText}>Notes: {playerNotes}</Text>
+              <View style={styles.buttonGroup}>
+                <View style={styles.buttonContainer}>
+                  <Button onPress={handleClose} title="Close" color="#757575" />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <Button onPress={() => setEditMode(true)} title="Edit" color="#1E88E5" />
+                </View>
+              </View>
             </>
           )}
-          {editMode && player.id === 1 && <Button disabled={true} title="Host can not be deleted" color="#808080" />}
-          {editMode && player.id !== 1 && <Button onPress={() => onDelete(player.id!)} title="Delete Player" color="#FF0000" />}
-          {editMode && <Button onPress={handleUpdate} title="Save" color="#0000FF" />}
-          {!editMode && <Button onPress={handleClose} title="Close" color="#000000" />}
         </View>
       </View>
     </Modal>
@@ -97,7 +110,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: 'flex-start',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -108,9 +121,17 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: '80%',
   },
+  modalName: {
+    fontSize: 20,
+    textAlign: 'left',
+    width: '100%',
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   modalText: {
     marginBottom: 15,
     textAlign: 'left',
+    width: '100%',
   },
   input: {
     width: '100%',
@@ -118,16 +139,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  header: {
+  buttonGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     width: '100%',
-    paddingBottom: 10,
+    marginTop: 5,
+    marginRight: -20,
   },
-  editIcon: {
-    position: 'absolute', // Position the edit icon absolutely
-    right: 0, // Distance from the right edge of the modal view
-    top: 0, // Distance from the top edge of the modal view
+  buttonContainer: {
+    marginHorizontal: 5,
+  },
+  closeIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
 });
 

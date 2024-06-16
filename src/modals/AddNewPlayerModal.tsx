@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Modal, Button, TextInput } from 'react-native';
+import { View, StyleSheet, Modal, Button, TextInput, TouchableOpacity, Text } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Player } from '../db/models';
 
 interface AddNewPlayerModalProps {
@@ -40,6 +41,9 @@ const AddNewPlayerModal: React.FC<AddNewPlayerModalProps> = ({ visible, onClose,
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
+          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+            <MaterialIcons name="close" size={24} color="black" />
+          </TouchableOpacity>
           <TextInput
             style={styles.input}
             onChangeText={(text) => setNewPlayer({ ...newPlayer, name: text })}
@@ -51,11 +55,16 @@ const AddNewPlayerModal: React.FC<AddNewPlayerModalProps> = ({ visible, onClose,
             onChangeText={(text) => setNewPlayer({ ...newPlayer, playerNotes: text })}
             value={newPlayer.playerNotes}
             placeholder="Player Notes"
-            multiline // Allows for multiline input
+            multiline
           />
-          {/* Add more TextInput components for each property of the player */}
-          <Button title="Add Player" onPress={handleAddPlayer} />
-          <Button title="Cancel" onPress={handleClose} />
+          <View style={styles.buttonGroup}>
+            <View style={styles.buttonContainer}>
+              <Button title="Cancel" onPress={handleClose} color="#d32f2f" />
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Add Player" onPress={handleAddPlayer} color="#4caf50" />
+            </View>
+          </View>
         </View>
       </View>
     </Modal>
@@ -67,8 +76,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 22,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     margin: 20,
@@ -84,13 +91,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: '80%',
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+    marginBottom: 10, // Adjust based on your modal's design
+    marginRight: -10, // Adjust based on your modal's design
   },
   input: {
-    height: 40,
-    margin: 12,
+    width: '100%',
+    marginBottom: 10,
     borderWidth: 1,
     padding: 10,
-    width: 200,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  buttonContainer: {
+    flex: 0,  // Remove flex to let button wrap content
+    marginHorizontal: 10,  // Add some spacing between buttons
   },
 });
 
