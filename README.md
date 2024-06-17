@@ -2,6 +2,8 @@
 
 This react web app aims to provide user to easily create and manage a poker session ledger. Player Management also available.
 
+**[Downloadable APK](https://expo.dev/accounts/owenwong0627/projects/Poker-Host-Ledger/builds/29a359ea-57d3-4424-9987-04d9abe810f3)**
+
 ## Getting Started
 
 Clone the repository
@@ -21,8 +23,6 @@ Start the server
 ```
 npx expo start
 ```
-
-## [Downloadable APK](https://expo.dev/accounts/owenwong0627/projects/Poker-Host-Ledger/builds/29a359ea-57d3-4424-9987-04d9abe810f3)
 
 ## Preview Images
 <img src="https://github.com/OwenWong0627/Poker-Host-Ledger/assets/46075591/660ac52a-d139-4001-9408-5d5567e81f65" width="300"/>
