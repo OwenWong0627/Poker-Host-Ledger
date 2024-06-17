@@ -22,6 +22,4 @@ Start the server
 npx expo start
 ```
 
-## Downloadable APK
-
-https://expo.dev/accounts/owenwong0627/projects/Poker-Host-Ledger/builds/1065d481-0311-4fbf-96cf-685e8af7ab3e
+## [Downloadable APK](https://expo.dev/accounts/owenwong0627/projects/Poker-Host-Ledger/builds/29a359ea-57d3-4424-9987-04d9abe810f3)
