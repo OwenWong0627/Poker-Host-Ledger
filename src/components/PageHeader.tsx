@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginTop: 35,
+    marginTop: 5,
     marginBottom: 15,
     height: 50,
     backgroundColor: 'white',
