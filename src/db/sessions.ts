@@ -23,7 +23,7 @@ export const addSession = async (db: SQLite.Database, session: Session): Promise
 };
 
 export const getSessions = async (db: SQLite.Database): Promise<Session[]> => {
-  const query = `SELECT * FROM Sessions`;
+  const query = `SELECT * FROM Sessions ORDER BY date DESC`;
 
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
