@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite/legacy';
 import { Session } from './models';
 
 export const addSession = async (db: SQLite.Database, session: Session): Promise<void> => {

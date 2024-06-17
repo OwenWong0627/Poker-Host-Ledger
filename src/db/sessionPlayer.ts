@@ -1,5 +1,5 @@
-import * as SQLite from 'expo-sqlite';
-import { Player, SessionPlayerDetail } from './models';
+import * as SQLite from 'expo-sqlite/legacy';
+import { SessionPlayerDetail } from './models';
 
 export const addPlayerToSession = async (
   db: SQLite.Database, 

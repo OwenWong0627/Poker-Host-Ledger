@@ -70,7 +70,7 @@ const HomeScreen = ({navigation}: {navigation: any}) => {
         <View style={styles.container}>
           <Image
             style={styles.logo}
-            source={require('../assets/poker-logo.png')}
+            source={require('../assets/poker.png')}
           />
 
           {/* Stats Section */}

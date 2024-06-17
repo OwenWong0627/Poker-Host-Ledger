@@ -1,4 +1,4 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite/legacy';
 import { Player } from "./models";
 
 export const addPlayer = async (db: SQLite.Database, player: Player): Promise<void> => {
